@@ -5,7 +5,14 @@ import * as argon from 'argon2'
 
 @Injectable()
 export class UsersService {
-constructor(private prisma: PrismaService){}
+    constructor(private prisma: PrismaService) { }
+    
+    //Get users
+    async getUsers() {
+        const users = await this.prisma.user.findMany({})
+
+        return users
+    }
      //Get user by id
 
     async getUser(id: number) {

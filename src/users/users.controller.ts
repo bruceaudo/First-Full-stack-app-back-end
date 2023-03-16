@@ -1,5 +1,5 @@
 import {
-    Body,
+  Body,
   Controller,
   Delete,
   Get,
@@ -14,15 +14,21 @@ import { JwtAuthGuard } from 'src/auth/AuthGuard'
 import { User } from 'src/auth/decorators'
 import { updateAuthDTO } from 'src/auth/DTO'
 import { UsersService } from './users.service'
-@UseGuards(JwtAuthGuard)
+
 @Controller('users')
 export class UsersController {
   constructor (
     private usersService: UsersService,
     private authService: AuthService,
   ) {}
-  //Get user by id
 
+  //Get all user
+  @Get('all')
+  getUsers () {
+    return this.usersService.getUsers()
+  }
+  //Get user by id
+  @UseGuards(JwtAuthGuard)
   @Get()
   getUser (@User() user) {
     const id: number = user.userId
@@ -31,21 +37,19 @@ export class UsersController {
   }
 
   //Update user by id
-
-  
+  @UseGuards(JwtAuthGuard)
   @Patch()
-  updateUser(@User() user, @Body() dto:updateAuthDTO) {
-      
-      const id: number = user.userId
+  updateUser (@User() user, @Body() dto: updateAuthDTO) {
+    const id: number = user.userId
 
     return this.usersService.updateUser(id, dto)
   }
 
   //Delete user by id
-  
+  @UseGuards(JwtAuthGuard)
   @Delete()
-  deleteUser(@User() user) {
-      const id: number = user.userId
+  deleteUser (@User() user) {
+    const id: number = user.userId
     return this.usersService.deleteUser(id)
   }
 }

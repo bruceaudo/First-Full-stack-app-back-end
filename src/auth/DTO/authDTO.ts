@@ -12,6 +12,19 @@ export class authDTO {
   password: string
 }
 
+export class loginAuthDTO {
+  @IsOptional()
+  @IsString()
+  name?: string
+  @IsNotEmpty()
+  @IsEmail()
+  email: string
+  @IsNotEmpty()
+  @IsString()
+  password: string
+}
+
+
 export class updateAuthDTO{
   @IsOptional()
   @IsString()

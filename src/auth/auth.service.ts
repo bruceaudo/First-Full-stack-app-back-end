@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { authDTO } from './DTO'
+import { authDTO, loginAuthDTO } from './DTO'
 import * as argon from 'argon2'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
@@ -41,7 +41,7 @@ export class AuthService {
     }
   }
 
-  async loginUser (dto: authDTO) {
+  async loginUser (dto: loginAuthDTO) {
     const userExists = await this.prisma.user.findUnique({
       where: {
         email: dto.email,
