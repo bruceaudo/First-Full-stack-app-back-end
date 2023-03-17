@@ -12,7 +12,7 @@ import {
 import { AuthService } from 'src/auth/auth.service'
 import { JwtAuthGuard } from 'src/auth/AuthGuard'
 import { User } from 'src/auth/decorators'
-import { updateAuthDTO } from 'src/auth/DTO'
+import { resetPasswordDTO, updateAuthDTO } from 'src/auth/DTO'
 import { UsersService } from './users.service'
 
 @Controller('users')
@@ -40,9 +40,8 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Patch()
   updateUser (@User() user, @Body() dto: updateAuthDTO) {
-    const id: number = user.userId
-
-    return this.usersService.updateUser(id, dto)
+    const userId: number = user.userId
+    return this.usersService.updateUser(userId, dto)
   }
 
   //Delete user by id
@@ -51,5 +50,12 @@ export class UsersController {
   deleteUser (@User() user) {
     const id: number = user.userId
     return this.usersService.deleteUser(id)
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('reset')
+  resetPassword(@User() user, @Body() dto: resetPasswordDTO) {
+    const userId: number = user.userId
+    return this.usersService.resetPassword(dto, userId)
   }
 }

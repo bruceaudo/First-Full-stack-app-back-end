@@ -24,12 +24,20 @@ export class loginAuthDTO {
   password: string
 }
 
-
-export class updateAuthDTO{
+export class updateAuthDTO {
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   name?: string
   @IsOptional()
   @IsEmail()
+  @IsNotEmpty()
   email?: string
+}
+
+export class resetPasswordDTO {
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  password: string
 }

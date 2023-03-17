@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
-import { updateAuthDTO } from 'src/auth/DTO'
+import { resetPasswordDTO, updateAuthDTO } from 'src/auth/DTO'
 import { PrismaService } from 'src/prisma/prisma.service'
 import * as argon from 'argon2'
 
@@ -34,16 +34,18 @@ export class UsersService {
 
   //Update user by id
 
-  async updateUser (id: number, dto: updateAuthDTO) {
+  async updateUser (userId: number, dto: updateAuthDTO) {
     try {
       const updatedUser = await this.prisma.user.update({
         where: {
-          id: id,
+          id: userId,
         },
         data: {
           ...dto,
         },
       })
+
+      delete updatedUser.password
 
       return updatedUser
     } catch (error) {
@@ -61,6 +63,25 @@ export class UsersService {
         },
       })
       return user
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async resetPassword (dto: resetPasswordDTO, id: number) {
+    try {
+      const hash = await argon.hash(dto.password)
+
+      const updatedPassword = await this.prisma.user.update({
+        where: {
+          id: id,
+        },
+        data: {
+          password: hash,
+        },
+      })
+
+      return { status: 'Success' }
     } catch (error) {
       throw error
     }
