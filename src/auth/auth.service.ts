@@ -7,7 +7,11 @@ import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class AuthService {
-  constructor (private prisma: PrismaService, private jwt: JwtService, private config: ConfigService) {}
+  constructor (
+    private prisma: PrismaService,
+    private jwt: JwtService,
+    private config: ConfigService,
+  ) {}
 
   async registerUser (dto: authDTO) {
     const userExists = await this.prisma.user.findUnique({
@@ -28,12 +32,12 @@ export class AuthService {
           password: hash,
         },
       })
-        
-        const access_token = await this.signToken(user.id, user.email)
+
+      const access_token = await this.signToken(user.id, user.email)
 
       delete user.password
 
-      return {user, access_token}
+      return { user, access_token }
     } catch (error) {
       if (error === 'P2002') throw new ForbiddenException('Email already taken')
 
@@ -42,30 +46,38 @@ export class AuthService {
   }
 
   async loginUser (dto: loginAuthDTO) {
-    const userExists = await this.prisma.user.findUnique({
-      where: {
-        email: dto.email,
-      },
-    })
+    try {
+      const userExists = await this.prisma.user.findUnique({
+        where: {
+          email: dto.email,
+        },
+      })
 
-    if (!userExists) throw new ForbiddenException('User does not exist')
+      if (!userExists) throw new ForbiddenException('User does not exist')
 
       const access_token = await this.signToken(userExists.id, userExists.email)
 
-    delete userExists.password
+      delete userExists.password
 
       return { userExists, access_token }
+    } catch (error) {
+      throw error
+    }
   }
-    
-    signToken(id: number, email: string) {
-        const payload = {
-            sub: id,
-            email: email
-        }
-        
-        return this.jwt.signAsync(payload, {
-            expiresIn:('1d'),
-            secret:this.config.get('SECRET_KEY')
-        })
+
+  signToken (id: number, email: string) {
+    try {
+      const payload = {
+        sub: id,
+        email: email,
+      }
+
+      return this.jwt.signAsync(payload, {
+        expiresIn: '1d',
+        secret: this.config.get('SECRET_KEY'),
+      })
+    } catch (error) {
+      throw error
+    }
   }
 }

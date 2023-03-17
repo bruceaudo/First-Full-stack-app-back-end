@@ -1,53 +1,68 @@
-import { Injectable } from '@nestjs/common';
-import { updateAuthDTO } from 'src/auth/DTO';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { ForbiddenException, Injectable } from '@nestjs/common'
+import { updateAuthDTO } from 'src/auth/DTO'
+import { PrismaService } from 'src/prisma/prisma.service'
 import * as argon from 'argon2'
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) { }
-    
-    //Get users
-    async getUsers() {
-        const users = await this.prisma.user.findMany({})
+  constructor (private prisma: PrismaService) {}
 
-        return users
+  //Get users
+  async getUsers () {
+    try {
+      const users = await this.prisma.user.findMany({})
+
+      return users
+    } catch (error) {
+      throw error
     }
-     //Get user by id
+  }
+  //Get user by id
 
-    async getUser(id: number) {
-        
-        const user = await this.prisma.user.findUnique({
-            where: {
-                id: id,
-            }
-        })
-        return user
+  async getUser (id: number) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+      })
+      return user
+    } catch (error) {
+      throw error
     }
+  }
 
-    //Update user by id
+  //Update user by id
 
-    async updateUser(id: number, dto: updateAuthDTO) {
+  async updateUser (id: number, dto: updateAuthDTO) {
+    try {
+      const updatedUser = await this.prisma.user.update({
+        where: {
+          id: id,
+        },
+        data: {
+          ...dto,
+        },
+      })
 
-        const updatedUser = await this.prisma.user.update({
-            where: {
-                id: id
-            },
-            data: {
-                ...dto
-            }
-        })
-        return updatedUser
+      return updatedUser
+    } catch (error) {
+      throw error
     }
+  }
 
-    //Delete user by id
+  //Delete user by id
 
-    async deleteUser(id: number) {
-        const user = await this.prisma.user.delete({
-            where: {
-                id:id
-            }
-        })
-        return user
+  async deleteUser (id: number) {
+    try {
+      const user = await this.prisma.user.delete({
+        where: {
+          id: id,
+        },
+      })
+      return user
+    } catch (error) {
+      throw error
     }
+  }
 }
